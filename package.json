@@ -1,0 +1,28 @@
+{
+  "name": "tokenomix",
+  "version": "1.0.0",
+  "description": "Tokenize everithing",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "openzeppelin-solidity": "^2.3.0",
+    "web3": "^1.0.0-beta.55"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dzentota/tokenomix.git"
+  },
+  "keywords": [],
+  "author": "Alex Tatulchenkov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dzentota/tokenomix/issues"
+  },
+  "homepage": "https://github.com/dzentota/tokenomix#readme"
+}

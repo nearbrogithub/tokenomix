@@ -46,14 +46,14 @@ contract BaseAsset is IAsset, Owned {
      * @dev Constructor
      */
     constructor (address account, string memory name, bytes32 symbol,
-    uint256 totalSupply, uint8 decimals, bool isTransferable, bool isReissuable)
+    uint256 amount, uint8 decimals, bool isTransferable, bool isReissuable)
      public {
         _name = name;
         _symbol = symbol;
-        _totalSupply = totalSupply;
         _decimals = decimals;
         _isTransferable = isTransferable;
         _isReissuable = isReissuable;
+        uint256 totalSupply = amount * 10**uint(decimals);
         _mint(account, totalSupply);
     }
 

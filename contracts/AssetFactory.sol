@@ -20,7 +20,12 @@ contract AssetFactory is Owned {
     mapping(bytes32 => Asset) public assets;
     mapping(address => bytes32[]) public assetsOwner;
     mapping(bytes32 => IAsset) public assetsAddresses;
+    mapping(address => uint256) private assetsNumber;
 
+    function getAssetsNumber(address _owner) public view returns(uint256) {
+        return assetsNumber[_owner];
+    }
+    
      /**
      * Emits Error if called not by asset owner.
      */
@@ -154,6 +159,7 @@ contract AssetFactory is Owned {
         if (_value == 0 && !_isReissuable) {
             revert("Cannot issue 0 value fixed asset");
         }
+        require(_baseUnit > 0 && _baseUnit <= 18, 'Invalid Decimals parameter');
         // Should not be issued yet.
         require(!isCreated(_symbol),"Asset already issued");
 
