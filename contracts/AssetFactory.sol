@@ -151,17 +151,19 @@ contract AssetFactory is Owned {
     bool _isReissuable) public
     onlyContractOwner() returns(address) {
         // Should have positive value if supply is going to be fixed.
-        require(_value == 0 && !_isReissuable, "Cannot issue 0 value fixed asset");
+        if (_value == 0 && !_isReissuable) {
+            revert("Cannot issue 0 value fixed asset");
+        }
         // Should not be issued yet.
-        require(isCreated(_symbol),"Asset already issued");
+        require(!isCreated(_symbol),"Asset already issued");
 
         //uint holderId = _createHolderId(msg.sender);
 
         assets[_symbol] = Asset(msg.sender, _value, _name, _description, _isReissuable, _isTransferable, _baseUnit);
-        BaseAsset c = new BaseAsset(_name, _symbol, _value, _baseUnit, _isTransferable, _isReissuable);
+        BaseAsset c = new BaseAsset(msg.sender, _name, _symbol, _value, _baseUnit, _isTransferable, _isReissuable);
         assetsOwner[msg.sender].push(_symbol);
-    //     mapping(address => bytes32[]) public assetsOwner;
-    // mapping(bytes32 => IAsset) public assetsAddresses;
+        assetsAddresses[_symbol] = c;
+        c.transferContractOwnership(msg.sender);
         return address(c);
     }
 }

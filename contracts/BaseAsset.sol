@@ -45,7 +45,8 @@ contract BaseAsset is IAsset, Owned {
     /**
      * @dev Constructor
      */
-    constructor (string memory name, bytes32 symbol, uint256 totalSupply, uint8 decimals, bool isTransferable, bool isReissuable)
+    constructor (address account, string memory name, bytes32 symbol,
+    uint256 totalSupply, uint8 decimals, bool isTransferable, bool isReissuable)
      public {
         _name = name;
         _symbol = symbol;
@@ -53,6 +54,7 @@ contract BaseAsset is IAsset, Owned {
         _decimals = decimals;
         _isTransferable = isTransferable;
         _isReissuable = isReissuable;
+        _mint(account, totalSupply);
     }
 
     /**
