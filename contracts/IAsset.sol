@@ -60,9 +60,8 @@ interface IAsset {
     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 
     function swap(address tokenGet, uint amountGet, address tokenGive,
-     uint amountGive, uint expires, uint nonce,
-     address user, uint8 v, bytes32 r, bytes32 s, uint amount) external returns(bool);
-
+        uint amountGive, uint expires, uint nonce,
+        address user, uint8 v, bytes32 r, bytes32 s) external returns(bool);
     /**
      * @dev Emitted when `value` tokens are moved from one account (`from`) to
      * another (`to`).

@@ -27,7 +27,7 @@ import "./SafeMath.sol";
  * functions have been added to mitigate the well-known issues around setting
  * allowances. See `IERC20.approve`.
  */
-contract Asset is IAsset, Owned {
+contract BaseAsset is IAsset, Owned {
     using SafeMath for uint256;
 
     mapping (address => uint256) private _balances;
@@ -37,26 +37,22 @@ contract Asset is IAsset, Owned {
     uint256 private _totalSupply;
 
     string private _name;
-    string private _symbol;
+    bytes32 private _symbol;
     uint8 private _decimals;
     bool private _isTransferable;
-    // uint8 private _fee;
     bool private _isReissuable;
 
     /**
-     * @dev Sets the values for `name`, `symbol`, and `decimals`. All of
-     * these values are immutable: they can only be set once during
-     * construction.
+     * @dev Constructor
      */
-    constructor (string memory name, string memory symbol, uint8 decimals, bool isTransferable, bool isReissuable)
+    constructor (string memory name, bytes32 symbol, uint256 totalSupply, uint8 decimals, bool isTransferable, bool isReissuable)
      public {
         _name = name;
         _symbol = symbol;
+        _totalSupply = totalSupply;
         _decimals = decimals;
         _isTransferable = isTransferable;
         _isReissuable = isReissuable;
-        // require(fee <= 99, 'Max fee is 99%');
-        // _fee = fee;
     }
 
     /**
@@ -70,7 +66,7 @@ contract Asset is IAsset, Owned {
      * @dev Returns the symbol of the token, usually a shorter version of the
      * name.
      */
-    function symbol() public view returns (string memory) {
+    function symbol() public view returns (bytes32) {
         return _symbol;
     }
 
@@ -193,6 +189,17 @@ contract Asset is IAsset, Owned {
         _approve(msg.sender, spender, _allowances[msg.sender][spender].sub(subtractedValue));
         return true;
     }
+
+    function swap(address tokenGet, uint amountGet, address tokenGive,
+        uint amountGive, uint expires, uint nonce,
+        address user, uint8 v, bytes32 r, bytes32 s) public returns(bool) {
+        bytes32 hash = sha256(abi.encodePacked(this, tokenGet, amountGet, tokenGive, amountGive, expires, nonce));
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+        bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, hash));
+        require(ecrecover(prefixedHash, v, r, s) == user, 'Wrong User');
+        require(block.number <= expires, 'Order Expired');
+     }
+
 
     /**
      * @dev Moves tokens `amount` from `sender` to `recipient`.

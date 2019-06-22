@@ -2,6 +2,7 @@ pragma solidity ^0.5.0;
 
 import './Owned.sol';
 import './IAsset.sol';
+import './BaseAsset.sol';
 
 contract AssetFactory is Owned {
 
@@ -10,8 +11,8 @@ contract AssetFactory is Owned {
         uint totalSupply;                 // Asset's total supply.
         string name;                      // Asset's name, for information purposes.
         string description;               // Asset's description, for information purposes.
-        bool isReissuable;                // Indicates if asset have dynamic or fixed supply.
         bool isTransferable;              // Wether can be transfered
+        bool isReissuable;                // Indicates if asset have dynamic or fixed supply.
         uint8 baseUnit;                   // Proposed number of decimals.
     }
 
@@ -129,5 +130,38 @@ contract AssetFactory is Owned {
         return assetsAddresses[_symbol].balanceOf(_holder);
     }
 
-    
+     /**
+     * Issues new asset token on the platform.
+     *
+     * Tokens issued with this call go straight to contract owner.
+     * Each symbol can be issued only once, and only by contract owner.
+     *
+     * @param _symbol asset symbol.
+     * @param _value amount of tokens to issue immediately.
+     * @param _name name of the asset.
+     * @param _description description for the asset.
+     * @param _baseUnit number of decimals.
+     * @param _isTransferable whether it can be transferred to others
+     * @param _isReissuable dynamic or fixed supply.
+     *
+     * @return success.
+     */
+    function issueAsset(bytes32 _symbol, uint _value, string memory _name,
+    string memory _description, uint8 _baseUnit, bool _isTransferable,
+    bool _isReissuable) public
+    onlyContractOwner() returns(address) {
+        // Should have positive value if supply is going to be fixed.
+        require(_value == 0 && !_isReissuable, "Cannot issue 0 value fixed asset");
+        // Should not be issued yet.
+        require(isCreated(_symbol),"Asset already issued");
+
+        //uint holderId = _createHolderId(msg.sender);
+
+        assets[_symbol] = Asset(msg.sender, _value, _name, _description, _isReissuable, _isTransferable, _baseUnit);
+        BaseAsset c = new BaseAsset(_name, _symbol, _value, _baseUnit, _isTransferable, _isReissuable);
+        assetsOwner[msg.sender].push(_symbol);
+    //     mapping(address => bytes32[]) public assetsOwner;
+    // mapping(bytes32 => IAsset) public assetsAddresses;
+        return address(c);
+    }
 }
