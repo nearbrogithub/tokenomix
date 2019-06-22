@@ -1,0 +1,2 @@
+# tokenomix
+Tokenize everithing
