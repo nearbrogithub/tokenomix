@@ -116,8 +116,10 @@ App = {
                         errorText += 'Kovan test network';
                         break;
                     default:
-                        console.log('Unknown network: ' + netId);
+                        errorText += 'Unknown network: ' + netId;
+                        break;
                 }
+                return;
                 errorText += '. Please switch to ' + expectedNetwork.name;
                 App.showModal(errorText);
                 $('body').removeClass('loading');
@@ -173,9 +175,13 @@ App = {
             //console.log(instance);
             var AssetFactory = instance.contract;
             console.log('account', account);
+            
             AssetFactory.getAssetsNumber.call(account, function(err, res){
-                console.log('number', err, res);
-                console.log(res.toString(10));
+                if (!err) {
+                   $('#numberOfAssets').text(res.toString(10));
+                } else {
+                    console.log('getting assets number error', err);
+                }
             });
             AssetFactory.assetsOwner.call(account, 0, function(err, res){
                 if (err) {
@@ -183,17 +189,20 @@ App = {
                 }
                 console.log('owner', err, res);
             });
-            // promises.push(AssetFactory.assetsOwner.call(account));
+            promises.push(instance.getAssetsNumber.call(account));
+            // promises.push(instance.assetsOwner.call(account, 0));
             
-            // Promise.all(promises)
-            //     .then(function (data) {
-            //         var assets = data[0];
-            //         console.log(assets);
+            Promise.all(promises)
+                .then(function (data) {
+                    console.log('data', data);
+                    var assetsNumber = data[0];
+                    
+                    console.log(assetsNumber.toString(10));
 
-            //     })
-            //     .catch(function (err) {
-            //         console.log(err.message);
-            //     });
+                })
+                .catch(function (err) {
+                    console.log(err.message);
+                });
 
         });
 
@@ -228,7 +237,9 @@ App = {
         event.preventDefault();
         
         App.mainContract.deployed().then(function(instance) {
-            return true;
+            return instance.issueAsset("0x74657374",1000,"my token","Alex work time",18,1,0);
+            //var AssetFactory = instance.contract;
+            
             // return $('body').addClass('loading')
             //     && instance.contribute({from: account, value: amount, gas: 200000, gasPrice:App.getGastPrice(speed)});//40Gwei
         }).then(function(result) {

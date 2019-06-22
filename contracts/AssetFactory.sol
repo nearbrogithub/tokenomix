@@ -1,10 +1,9 @@
 pragma solidity ^0.5.0;
 
-import './Owned.sol';
 import './IAsset.sol';
 import './BaseAsset.sol';
 
-contract AssetFactory is Owned {
+contract AssetFactory {
 
     struct Asset {
         address owner;                    // Asset's owner address.
@@ -20,12 +19,16 @@ contract AssetFactory is Owned {
     mapping(bytes32 => Asset) public assets;
     mapping(address => bytes32[]) public assetsOwner;
     mapping(bytes32 => IAsset) public assetsAddresses;
-    mapping(address => uint256) private assetsNumber;
+    // mapping(address => uint256) private assetsNumber;
+
+    // function getAssetsNumber(address _owner) public view returns(uint256) {
+    //     return assetsNumber[_owner];
+    // }
 
     function getAssetsNumber(address _owner) public view returns(uint256) {
-        return assetsNumber[_owner];
+        return assetsOwner[_owner].length;
     }
-    
+
      /**
      * Emits Error if called not by asset owner.
      */
@@ -153,8 +156,7 @@ contract AssetFactory is Owned {
      */
     function issueAsset(bytes32 _symbol, uint _value, string memory _name,
     string memory _description, uint8 _baseUnit, bool _isTransferable,
-    bool _isReissuable) public
-    onlyContractOwner() returns(address) {
+    bool _isReissuable) public returns(address) {
         // Should have positive value if supply is going to be fixed.
         if (_value == 0 && !_isReissuable) {
             revert("Cannot issue 0 value fixed asset");

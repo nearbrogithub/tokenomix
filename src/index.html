@@ -27,11 +27,21 @@
         </div>
       </div>
 
+      <h4>You've issued <span id="numberOfAssets">?</span> asset(s)</h4>
       <div id="myAssets" class="row">
         <!-- Assets goes here -->
       </div>
       <div>
-        <button class="btn btn-default" id="btn-create" type="button" >Issue Asset</button>
+          <h4>Issue new Asset</h4>
+          <form>
+              <label>Name</label><input type="text" id="asset_name" /><br>
+              <label>Symbol</label><input type="text" id="asset_symbol" /><br>
+              <label>Supply</label><input type="text" id="asset_supply" /><br>
+              <label>Decimals</label><input type="text" id="asset_decimals" /><br>
+              <label>Transferable?</label><input type="checkbox" id="asset_transferable" /><br>
+              <label>Mintable?</label><input type="text" id="asset_mintable" /><br>
+          </form>
+          <button class="btn btn-default" id="btn-create" type="button" >Issue Asset</button>
       </div>
     </div>
 
