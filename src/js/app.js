@@ -218,26 +218,7 @@ App = {
                     console.log('getting assets number error', err);
                 }
             });
-            AssetFactory.assetsOwner.call(account, 0, function(err, res){
-                if (err) {
-                    console.log('error occured');
-                }
-                console.log('owner', err, res);
-            });
-            // promises.push(instance.getAssetsNumber.call(account));
-            
-            // Promise.all(promises)
-            //     .then(function (data) {
-            //         console.log('data', data);
-            //         var assetsNumber = data[0];
-                    
-            //         console.log(assetsNumber.toString(10));
-
-            //     })
-            //     .catch(function (err) {
-            //         console.log(err.message);
-            //     });
-
+            $('body').removeClass('loading');
         });
 
     },
