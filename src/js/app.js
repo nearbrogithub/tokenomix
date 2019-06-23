@@ -175,10 +175,45 @@ App = {
             //console.log(instance);
             var AssetFactory = instance.contract;
             console.log('account', account);
-            
+            $('#myAssets').html('');
             AssetFactory.getAssetsNumber.call(account, function(err, res){
                 if (!err) {
-                   $('#numberOfAssets').text(res.toString(10));
+                    var numberOfAssets = res.toString(10);
+                   $('#numberOfAssets').text(numberOfAssets);
+                   if (numberOfAssets) {
+                       for(var i=0; i < numberOfAssets; i++) {
+                        AssetFactory.assetsOwner.call(account, i, function(err, res){
+                            if (!err) {
+                            var symbol = res;
+                            AssetFactory.assetData.call(res, function(err, res) {
+                                if (!err) {
+                                    var assets = $('#myAssets');
+                                    var textSymbol = web3.toUtf8(symbol);
+                                    var assetTemplate = $('#assetTemplate');
+                                    assetTemplate.find('.asset-symbol').text(textSymbol);
+                                    assetTemplate.find('.asset-name').text(res[0]);
+                                    assetTemplate.find('.asset-description').text(res[1]);
+                                    assetTemplate.find('.asset-supply').text(res[2].toString(10));
+                                    assetTemplate.find('.asset-decimals').text(res[3].toString(10));
+                                    assetTemplate.find('.asset-transferable').text(res[4]? 'Yes' : 'No');
+                                    assetTemplate.find('.asset-mintable').text(res[5]? 'Yes' : 'No');
+
+                                    var row = assetTemplate.html();
+                                    assets.append(row);
+                                }
+                                console.log(res);
+                                
+        
+                            })
+                            } else {
+                                console.log('cannot get symbol at position ' + i);
+                            }
+                        }); 
+                            
+                       }
+                    
+            
+                   }
                 } else {
                     console.log('getting assets number error', err);
                 }
@@ -189,20 +224,19 @@ App = {
                 }
                 console.log('owner', err, res);
             });
-            promises.push(instance.getAssetsNumber.call(account));
-            // promises.push(instance.assetsOwner.call(account, 0));
+            // promises.push(instance.getAssetsNumber.call(account));
             
-            Promise.all(promises)
-                .then(function (data) {
-                    console.log('data', data);
-                    var assetsNumber = data[0];
+            // Promise.all(promises)
+            //     .then(function (data) {
+            //         console.log('data', data);
+            //         var assetsNumber = data[0];
                     
-                    console.log(assetsNumber.toString(10));
+            //         console.log(assetsNumber.toString(10));
 
-                })
-                .catch(function (err) {
-                    console.log(err.message);
-                });
+            //     })
+            //     .catch(function (err) {
+            //         console.log(err.message);
+            //     });
 
         });
 
@@ -235,10 +269,19 @@ App = {
     handleIssueToken: function(event) {
 
         event.preventDefault();
-        
+        var symbol = web3.toHex($('#asset_symbol').val());
+        var amount = $('#asset_supply').val();
+        var name = $('#asset_name').val();
+        var description = $('#asset_description').val();
+        var decimals = $('#asset_decimals').val();
+        var isTransferable = $('#asset_transferable').is(":checked");
+        var isMintable = $('#asset_mintable').is(":checked");
+     
         App.mainContract.deployed().then(function(instance) {
-            return instance.issueAsset("0x74657374",1000,"my token","Alex work time",18,1,0);
-            //var AssetFactory = instance.contract;
+            return $('body').addClass('loading') && instance.issueAsset(
+                symbol, amount, name, description, decimals, isTransferable, isMintable
+            );
+            
             
             // return $('body').addClass('loading')
             //     && instance.contribute({from: account, value: amount, gas: 200000, gasPrice:App.getGastPrice(speed)});//40Gwei

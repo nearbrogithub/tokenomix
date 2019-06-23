@@ -4,14 +4,13 @@ import './IAsset.sol';
 import './BaseAsset.sol';
 
 contract AssetFactory {
-
     struct Asset {
         address owner;                    // Asset's owner address.
         uint totalSupply;                 // Asset's total supply.
         string name;                      // Asset's name, for information purposes.
         string description;               // Asset's description, for information purposes.
-        bool isTransferable;              // Wether can be transfered
         bool isReissuable;                // Indicates if asset have dynamic or fixed supply.
+        bool isTransferable;              // Wether can be transfered
         uint8 baseUnit;                   // Proposed number of decimals.
     }
 
@@ -68,6 +67,10 @@ contract AssetFactory {
      */
     function name(bytes32 _symbol) public view returns(string memory) {
         return assets[_symbol].name;
+    }
+
+    function assetData(bytes32 _symbol) public view returns(string memory, string memory, uint256, uint256, bool, bool) {
+        return (assets[_symbol].name, assets[_symbol].description, assets[_symbol].totalSupply, assets[_symbol].baseUnit, assets[_symbol].isTransferable, assets[_symbol].isReissuable);
     }
 
     /**
